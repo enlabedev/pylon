@@ -13,23 +13,29 @@ fake = Faker("es_ES")
 class UserFactory:
     @classmethod
     def create_superuser(cls):
-        return User.objects.create_superuser(
-            email="admin@pylon.pe",
-            password="pylon.admin.2025",
-            document_type=DocumentTypeChoices.DNI,
-            document_number="00000000",
-            first_name="Admin",
-            last_name="Pylon",
-            maternal_surname="Sistema",
-            current_address="Av. Principal 123, Lima",
-            ubigeo="150101",
-        )
+        try:
+            return User.objects.create_superuser(
+                email="admin@pylon.pe",
+                password="pylon.admin.2025",
+                document_type=DocumentTypeChoices.DNI,
+                document_number="00000000",
+                username="00000000",
+                first_name="Admin",
+                last_name="Pylon",
+                maternal_surname="Sistema",
+                current_address="Av. Principal 123, Lima",
+                ubigeo="150101",
+            )
+        except Exception as e:
+            logger.error(f"Error creando superusuario: {str(e)}")
+            pass
 
     @classmethod
     def create_test_users(cls, quantity=5):
         users = []
         for _ in range(quantity):
             try:
+                document_number = fake.unique.numerify("########")
                 user_data = {
                     "first_name": fake.first_name(),
                     "last_name": fake.last_name(),
@@ -37,7 +43,8 @@ class UserFactory:
                     "document_type": random.choice(
                         [dt.value for dt in DocumentTypeChoices]
                     ),
-                    "document_number": fake.unique.numerify("########"),
+                    "document_number": document_number,
+                    "username": document_number,
                     "ubigeo": fake.numerify("######"),
                     "current_address": fake.address(),
                     "email": fake.unique.email(),

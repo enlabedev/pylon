@@ -18,7 +18,13 @@ class Building(BaseModel):
 class Tower(models.Model):
     name = models.CharField(max_length=100, unique=True, blank=False, null=False)
     no_departments = models.IntegerField(blank=False, null=False)
-
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.CASCADE,
+        related_name="towers",
+        null=True,
+        blank=True,
+    )
     def __str__(self):
         return f"{self.name} - {self.no_departments} departments"
 

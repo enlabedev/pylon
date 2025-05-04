@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.users.apps.UsersConfig",
     "apps.core.apps.CoreConfig",
+    "apps.buildings.apps.BuildingsConfig",
     "guardian",
 ]
 

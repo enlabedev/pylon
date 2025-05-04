@@ -1,8 +1,10 @@
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from faker import Faker
-import random
 import logging
+import random
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from faker import Faker
+
 from .choices import DocumentTypeChoices
 
 logger = logging.getLogger(__name__)
@@ -21,10 +23,8 @@ class UserFactory:
                 document_number="00000000",
                 username="00000000",
                 first_name="Admin",
-                last_name="Pylon",
+                father_surname="Pylon",
                 maternal_surname="Sistema",
-                current_address="Av. Principal 123, Lima",
-                ubigeo="150101",
             )
         except Exception as e:
             logger.error(f"Error creando superusuario: {str(e)}")
@@ -38,15 +38,13 @@ class UserFactory:
                 document_number = fake.unique.numerify("########")
                 user_data = {
                     "first_name": fake.first_name(),
-                    "last_name": fake.last_name(),
+                    "father_surname": fake.last_name(),
                     "maternal_surname": fake.last_name(),
                     "document_type": random.choice(
                         [dt.value for dt in DocumentTypeChoices]
                     ),
                     "document_number": document_number,
                     "username": document_number,
-                    "ubigeo": fake.numerify("######"),
-                    "current_address": fake.address(),
                     "email": fake.unique.email(),
                     "password": "pylon.user.2025",
                 }

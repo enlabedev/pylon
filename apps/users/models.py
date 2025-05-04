@@ -1,65 +1,71 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-from apps.core.models import BaseModel
 from django.utils.translation import gettext_lazy as _
+
+from apps.core.models import AddressModel, BaseModel
 from apps.users import choices
 from apps.users.managers import UserManager
 
 
-class User(BaseModel, AbstractUser):
-    # Campos base personalizados
-    first_name = models.CharField(_("Nombres"), max_length=150)
-    last_name = models.CharField(_("Apellido Paterno"), max_length=150)
-    maternal_surname = models.CharField(
-        _("Apellido Materno"), max_length=150, blank=True
-    )
+class PeopleMixin(AddressModel, BaseModel):
+    """
+    Mixin to add people fields to a model.
+    """
+
+    first_name = models.CharField(_("First Nane"), max_length=150)
+    father_surname = models.CharField(_("Father Surname "), max_length=150)
+    maternal_surname = models.CharField(_("Mather Surname"), max_length=150, blank=True)
 
     # Campos adicionales
     document_type = models.CharField(
-        _("Tipo de Documento"),
+        _("Document Type"),
         max_length=10,
         choices=choices.DocumentTypeChoices.choices,
         default=choices.DocumentTypeChoices.DNI.value,
     )
     document_number = models.CharField(
-        _("Número de Documento"),
+        _("Document Number"),
         max_length=20,
         unique=True,
         validators=[
-            RegexValidator(
-                regex=r"^[0-9]{8,12}$", message=_("Formato de documento inválido")
-            )
+            RegexValidator(regex=r"^[0-9]{8,12}$", message=_("Document number invalid"))
         ],
     )
-    ubigeo = models.CharField(
-        _("Ubigeo"),
-        max_length=6,
-        blank=True,
-        validators=[
-            RegexValidator(
-                regex=r"^[0-9]{6}$", message=_("Ubigeo debe tener 6 dígitos")
-            )
-        ],
-    )
-    current_address = models.TextField(_("Dirección Actual"))
-    address_reference = models.TextField(_("Referencia"), blank=True)
+
     phone = models.CharField(
-        _("Teléfono"),
+        _("Phone"),
         max_length=20,
         blank=True,
         validators=[
-            RegexValidator(
-                regex=r"^\+?[0-9]{9,15}$", message=_("Formato de teléfono inválido")
-            )
+            RegexValidator(regex=r"^0[0-9]{8}$", message=_("Phone number invalid"))
         ],
     )
-    emergency_contact = models.JSONField(
-        _("Contacto de Emergencia"), default=dict, blank=True
+
+    mobile = models.CharField(
+        _("Mobile"),
+        max_length=20,
+        blank=True,
+        validators=[
+            RegexValidator(regex=r"^9[0-9]{8}$", message=_("Mobile number invalid"))
+        ],
     )
+
+    class Meta:
+        abstract = True
+        verbose_name = _("People")
+        verbose_name_plural = _("People")
+        ordering = ["first_name", "father_surname", "maternal_surname"]
+
+
+class User(
+    PeopleMixin,
+    AbstractUser,
+    BaseModel,
+):
     is_verified = models.BooleanField(_("Verificado"), default=False)
 
-    objects = UserManager()
+    objects: UserManager = UserManager()
     all_objects = models.Manager()
 
     class Meta:
@@ -75,7 +81,31 @@ class User(BaseModel, AbstractUser):
         return f"{self.get_full_name()} ({self.document_number})"
 
     def get_full_name(self):
-        return f"{self.first_name} {self.last_name} {self.maternal_surname}".strip()
+        return (
+            f"{self.first_name} {self.father_surname} {self.maternal_surname}".strip()
+        )
 
     def get_short_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.father_surname}"
+
+
+class Contacts(PeopleMixin):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="contacts",
+        verbose_name=_("User"),
+    )
+    relationship = models.CharField(
+        _("Relationship"),
+        max_length=50,
+        choices=choices.RelationshipChoices.choices,
+        default=choices.RelationshipChoices.FAMILY.value,
+    )
+
+    class Meta:
+        verbose_name = _("Contact")
+        verbose_name_plural = _("Contacts")
+        ordering = ["father_surname"]

@@ -3,13 +3,13 @@ from django.utils.translation import gettext_lazy as _
 
 
 class DocumentTypeChoices(models.TextChoices):
-    DNI = "DNI", _("Documento Nacional de Identidad")
-    CE = "CE", _("Carnet de Extranjería")
-    PASAPORTE = "PASAPORTE", _("Pasaporte")
+    DNI = "ID", _("National Identity Document")
+    CE = "FC", _("Foreigner's Card")
+    PASSPORT = "PASSPORT", _("Passport")
 
 
-class EmergencyContactTypeChoices(models.TextChoices):
-    FAMILIAR = "FAMILIAR", _("Familiar")
-    AMIGO = "AMIGO", _("Amigo")
-    VECINO = "VECINO", _("Vecino")
-    OTRO = "OTRO", _("Otro")
+class RelationshipChoices(models.TextChoices):
+    FAMILY = "FAMILY", _("Family")
+    FRIEND = "FRIEND", _("Friend")
+    NEIGHBOR = "NEIGHBOR", _("Neighbor")
+    OTHER = "OTHER", _("Other")

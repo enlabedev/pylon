@@ -41,9 +41,4 @@ class Department(models.Model):
         unique_together = ("name", "tower")
         verbose_name = "Department"
         verbose_name_plural = "Departments"
-        permissions = (
-            ("view_department", "Can view department"),
-            ("add_department", "Can add department"),
-            ("change_department", "Can change department"),
-            ("delete_department", "Can delete department"),
-        )
+        ordering = ["name"]

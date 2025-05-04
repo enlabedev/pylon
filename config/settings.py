@@ -39,7 +39,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.users.apps.UsersConfig",
     "apps.core.apps.CoreConfig",
+    "guardian",
 ]
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
+)
 
 AUTH_USER_MODEL = "users.User"
 

@@ -1,3 +1,5 @@
+from re import A
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
@@ -8,7 +10,7 @@ from apps.users import choices
 from apps.users.managers import UserManager
 
 
-class PeopleMixin(AddressModel, BaseModel):
+class PeopleMixin(BaseModel):
     """
     Mixin to add people fields to a model.
     """
@@ -60,6 +62,7 @@ class PeopleMixin(AddressModel, BaseModel):
 
 class User(
     PeopleMixin,
+    AddressModel,
     AbstractUser,
     BaseModel,
 ):

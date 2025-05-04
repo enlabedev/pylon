@@ -27,9 +27,14 @@ class Command(BaseCommand):
 
             # Superusuario
             admin = UserFactory.create_superuser()
-            self.stdout.write(
-                self.style.SUCCESS(_(f"Superusuario creado: {admin.email}"))
-            )
+            if admin:
+                self.stdout.write(
+                    self.style.SUCCESS(_(f"Superusuario creado: {admin.email}"))
+                )
+            else:
+                self.stdout.write(
+                    self.style.ERROR(_("No se pudo crear el superusuario"))
+                )
 
             # Usuarios de prueba solo en desarrollo
             if env == "dev":

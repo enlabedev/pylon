@@ -1,4 +1,4 @@
-# Requisitos de Documentación para Xofi
+# Requisitos de Documentación para Pylon
 
 ## Principios Generales
 

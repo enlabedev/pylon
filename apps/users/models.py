@@ -4,6 +4,7 @@ from django.db import models
 from apps.core.models import BaseModel
 from django.utils.translation import gettext_lazy as _
 from apps.users import choices
+from apps.users.managers import UserManager
 
 
 class User(BaseModel, AbstractUser):
@@ -57,6 +58,9 @@ class User(BaseModel, AbstractUser):
         _("Contacto de Emergencia"), default=dict, blank=True
     )
     is_verified = models.BooleanField(_("Verificado"), default=False)
+
+    objects = UserManager()
+    all_objects = models.Manager()
 
     class Meta:
         verbose_name = _("Usuario")

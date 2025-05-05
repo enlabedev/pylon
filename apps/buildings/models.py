@@ -25,6 +25,7 @@ class Tower(models.Model):
         null=True,
         blank=True,
     )
+
     def __str__(self):
         return f"{self.name} - {self.no_departments} departments"
 

@@ -19,9 +19,9 @@
 
 - Utilizar modelos abstractos en `core` para comportamientos compartidos
 - Implementar mixins para funcionalidades reutilizables
-- Mantener vistas delgadas y mover lógica de negocio a servicios
-- Usar Django REST Framework para APIs con serializers explícitos
+- Mover lógica de negocio a servicios
 - Gestionar permisos a nivel de vista con decoradores explícitos
+- Todo debe centrarse en el admin de django
 
 ## Nomenclatura
 
@@ -46,13 +46,13 @@ class BaseModel(models.Model):
 # Servicio en una aplicación específica
 class ServiceUser:
     """Servicio para gestionar operaciones de usuario."""
-    
+
     def get_by_id(self, user_id: uuid) -> Optional[User]:
         """Obtiene un usuario por su ID.
-        
+
         Args:
             user_id: ID del usuario a buscar
-            
+
         Returns:
             User encontrado o None si no existe
         """

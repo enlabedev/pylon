@@ -1,6 +1,6 @@
 # Guía del Proyecto PyLon
 
-Este archivo contiene los lineamientos de desarrollo que Cline debe seguir al proporcionar asistencia para este proyecto.
+Este archivo contiene los lineamientos de desarrollo que Cline debe seguir al proporcionar asistencia para este proyecto, todo el trabajo se realizara solo usando django admin.
 
 ## Estructura General del Proyecto
 

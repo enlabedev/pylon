@@ -131,3 +131,11 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Configuración de correo electrónico
+# TODO: [PYLON-XXX] Configurar backend de correo electrónico adecuado para producción
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Usar backend de consola para desarrollo
+DEFAULT_FROM_EMAIL = 'noreply@pylon.com'
+
+# URL de login (usada en el correo de bienvenida)
+LOGIN_URL = '/admin/login/'

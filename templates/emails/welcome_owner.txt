@@ -1,0 +1,14 @@
+Hola {{ user.first_name }},
+
+Tu cuenta en Pylon ha sido creada exitosamente.
+
+Aquí están tus credenciales para iniciar sesión:
+Usuario: {{ user.username }}
+Contraseña: {{ password }}
+
+Puedes iniciar sesión aquí: {{ login_url }}
+
+Por favor, cambia tu contraseña después de iniciar sesión por primera vez.
+
+Gracias,
+El equipo de Pylon

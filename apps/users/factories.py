@@ -14,20 +14,55 @@ fake = Faker("es_ES")
 
 class UserFactory:
     @classmethod
-    def create_superuser(cls):
+    def create_superuser(
+        cls, document_number=None, email=None, password=None
+    ):
         try:
+            if not document_number:
+                document_number = fake.unique.numerify("########")
+            if not email:
+                email = fake.unique.email()
+            if not password:
+                password = "pylon.admin.2025"
             return User.objects.create_superuser(
-                email="admin@pylon.pe",
-                password="pylon.admin.2025",
+                email=email,
+                password=password,
                 document_type=DocumentTypeChoices.DNI,
-                document_number="00000000",
-                username="00000000",
+                document_number=document_number,
+                username=document_number,
                 first_name="Admin",
                 father_surname="Pylon",
                 maternal_surname="Sistema",
+                # Eliminar is_superuser=is_superuser
             )
         except Exception as e:
             logger.error(f"Error creando superusuario: {str(e)}")
+            pass
+
+    @classmethod
+    def create_user(
+        cls, document_number=None, email=None, password=None, is_staff=False
+    ):
+        try:
+            if not document_number:
+                document_number = fake.unique.numerify("########")
+            if not email:
+                email = fake.unique.email()
+            if not password:
+                password = "pylon.user.2025"
+            return User.objects.create_user(
+                email=email,
+                password=password,
+                document_type=DocumentTypeChoices.DNI,
+                document_number=document_number,
+                username=document_number,
+                first_name=fake.first_name(),
+                father_surname=fake.last_name(),
+                maternal_surname=fake.last_name(),
+                # Eliminar is_staff=is_staff
+            )
+        except Exception as e:
+            logger.error(f"Error creando usuario: {str(e)}")
             pass
 
     @classmethod
@@ -35,20 +70,7 @@ class UserFactory:
         users = []
         for _ in range(quantity):
             try:
-                document_number = fake.unique.numerify("########")
-                user_data = {
-                    "first_name": fake.first_name(),
-                    "father_surname": fake.last_name(),
-                    "maternal_surname": fake.last_name(),
-                    "document_type": random.choice(
-                        [dt.value for dt in DocumentTypeChoices]
-                    ),
-                    "document_number": document_number,
-                    "username": document_number,
-                    "email": fake.unique.email(),
-                    "password": "pylon.user.2025",
-                }
-                users.append(User.objects.create_user(**user_data))
+                users.append(cls.create_user())
             except Exception as e:
                 logger.error(f"Error creando usuario: {str(e)}")
         return users

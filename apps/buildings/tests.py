@@ -16,7 +16,7 @@ User = get_user_model()
 
 class DepartmentPermissionsTestCase(TestCase):
     def setUp(self):
-        self.factory = RequestFactory()  # Instanciar RequestFactory
+        self.factory = RequestFactory()
         self.superuser: AbstractUser | None = UserFactory.create_superuser(
             document_number=99999999
         )
@@ -41,27 +41,19 @@ class DepartmentPermissionsTestCase(TestCase):
         self.department_other = Department.objects.create(
             name="Department Other", tower=self.tower, owner=self.other_user
         )
-
-        # Asegurarse de que los signals se han ejecutado y los permisos se han asignado
-        # Guardar de nuevo para activar el signal si no se activó en la creación inicial
         self.department_owner.save()
         self.department_other.save()
 
     def test_permissions_assigned_on_save(self):
         """Verifica que los permisos se asignan al propietario al guardar."""
         perms = get_perms(self.owner_user, self.department_owner)
-        # Verificar permisos del propietario sobre su departamento
         self.assertIn("view_department", perms)
         self.assertIn("change_department", perms)
         self.assertNotIn("delete_department", perms)
-
-        # Verificar que el propietario no tiene permisos sobre el departamento de otro
         perms_other_dept = get_perms(self.owner_user, self.department_other)
         self.assertNotIn("view_department", perms_other_dept)
         self.assertNotIn("change_department", perms_other_dept)
         self.assertNotIn("delete_department", perms_other_dept)
-
-        # Verificar que el otro usuario no tiene permisos sobre el departamento del propietario
         perms_other_user = get_perms(self.other_user, self.department_owner)
         self.assertNotIn("view_department", perms_other_user)
         self.assertNotIn("change_department", perms_other_user)
@@ -70,7 +62,6 @@ class DepartmentPermissionsTestCase(TestCase):
     def test_superuser_has_all_permissions(self):
         """Verifica que el superusuario tiene todos los permisos."""
         self.assertIsNotNone(self.superuser, "Superuser is None.")
-        # Usar has_perm directamente, no get_perms
         self.assertTrue(
             self.superuser
             and self.superuser.has_perm("view_department", self.department_owner)
@@ -157,7 +148,7 @@ class DepartmentPermissionsTestCase(TestCase):
         """Verifica que el queryset del admin para un propietario solo muestra sus departamentos."""
         site = AdminSite()
         department_admin = DepartmentAdmin(Department, site)
-        request = self.factory.get("/")  # Crear un request con RequestFactory
+        request = self.factory.get("/")
         assert self.owner_user is not None, "Owner user is None."
         request.user = self.owner_user  # Adjuntar el usuario
         queryset = department_admin.get_queryset(request)
@@ -169,9 +160,9 @@ class DepartmentPermissionsTestCase(TestCase):
         """Verifica que el queryset del admin para un superusuario muestra todos los departamentos."""
         site = AdminSite()
         department_admin = DepartmentAdmin(Department, site)
-        request = self.factory.get("/")  # Crear un request con RequestFactory
+        request = self.factory.get("/")
         assert self.superuser is not None, "Superuser is None."
-        request.user = self.superuser  # Adjuntar el usuario
+        request.user = self.superuser
         queryset = department_admin.get_queryset(request)
         self.assertEqual(queryset.count(), 2)
         self.assertIn(self.department_owner, queryset)
@@ -181,11 +172,10 @@ class DepartmentPermissionsTestCase(TestCase):
         """Verifica los permisos en el admin para un propietario."""
         site = AdminSite()
         department_admin = DepartmentAdmin(Department, site)
-        request = self.factory.get("/")  # Crear un request con RequestFactory
-        assert self.owner_user is not None, "Owner user is None."  # Añadir aserción
-        request.user = self.owner_user  # Adjuntar el usuario
+        request = self.factory.get("/")
+        assert self.owner_user is not None, "Owner user is None."
+        request.user = self.owner_user
 
-        # Propietario puede ver y cambiar su departamento
         self.assertTrue(
             department_admin.has_view_permission(request, obj=self.department_owner)
         )
@@ -196,7 +186,6 @@ class DepartmentPermissionsTestCase(TestCase):
             department_admin.has_delete_permission(request, obj=self.department_owner)
         )
 
-        # Propietario no puede ver ni cambiar departamentos de otros
         self.assertFalse(
             department_admin.has_view_permission(request, obj=self.department_other)
         )
@@ -237,11 +226,10 @@ class DepartmentPermissionsTestCase(TestCase):
         """Verifica los permisos en el admin para un superusuario."""
         site = AdminSite()
         department_admin = DepartmentAdmin(Department, site)
-        request = self.factory.get("/")  # Crear un request con RequestFactory
-        assert self.superuser is not None, "Superuser is None."  # Añadir aserción
-        request.user = self.superuser  # Adjuntar el usuario
+        request = self.factory.get("/")
+        assert self.superuser is not None, "Superuser is None."
+        request.user = self.superuser
 
-        # Superusuario puede ver, cambiar y eliminar cualquier departamento
         self.assertTrue(
             department_admin.has_view_permission(request, obj=self.department_owner)
         )
@@ -265,10 +253,8 @@ class DepartmentPermissionsTestCase(TestCase):
         """Verifica que un usuario no staff no puede acceder al admin."""
         site = AdminSite()
         department_admin = DepartmentAdmin(Department, site)
-        request = self.factory.get("/")  # Crear un request con RequestFactory
-        assert self.non_staff_user is not None, (
-            "Non-staff user is None."
-        )  # Añadir aserción
-        request.user = self.non_staff_user  # Adjuntar el usuario
+        request = self.factory.get("/")
+        assert self.non_staff_user is not None, "Non-staff user is None."
+        request.user = self.non_staff_user
 
         self.assertFalse(department_admin.has_module_permission(request))
